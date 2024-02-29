@@ -1,7 +1,4 @@
-from external_api.requester import Requester
-from external_api.type_def import ApiItem
 from middleware import Middleware, MiddlewareItem
-from repository.repository import RepositoryItem
 
 
 def main() -> None:
