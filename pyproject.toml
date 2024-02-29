@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "ff14"
+version = "0.1.0"
+description = ""
+authors = ["JulienGL <jgl94@free.fr>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pydantic = "^2.6.2"
+requests = "^2.31.0"
+mypy = "^1.8.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
