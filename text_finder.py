@@ -5,9 +5,9 @@ from middleware import Middleware, MiddlewareItem
 
 pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"
 
+
 def main():
     middleware = Middleware()
-
 
     while True:
         time.sleep(1)
@@ -24,22 +24,29 @@ def main():
                 idx = data["text"].index(word)
                 possibles_x.append(data["left"][idx])
                 possibles_y.append(data["top"][idx])
-        
+
         if len(possibles_x) >= 3:
             print("Found !")
-            screen_image = ImageGrab.grab(bbox=(min(possibles_x), min(possibles_y) + 100, min(possibles_x) + 400, min(possibles_y) + 300))
-            #screen_image = screen_image.convert("L")
+            screen_image = ImageGrab.grab(
+                bbox=(
+                    min(possibles_x),
+                    min(possibles_y) + 100,
+                    min(possibles_x) + 400,
+                    min(possibles_y) + 300,
+                )
+            )
+            # screen_image = screen_image.convert("L")
             data = pytesseract.image_to_data(
                 screen_image, output_type=pytesseract.Output.DICT
             )
             item_names = process_words(data)
-            
+
             items_amount = {}
-            
+
             for item_name in item_names:
                 print("Looking for items ", item_name)
                 items = middleware.search_item(item_name)
-                
+
                 if not items:
                     print("Item not found. Abort")
                     continue
@@ -48,21 +55,21 @@ def main():
                 for needed_ingredient in needed_ingredients:
                     if needed_ingredient.name not in items_amount:
                         items_amount[needed_ingredient.name] = 0
-                        
+
                     items_amount[needed_ingredient.name] += 1
-                    
+
                 local_items_amount = {
-                    item.name: needed_ingredients.count(item) for item in needed_ingredients
+                    item.name: needed_ingredients.count(item)
+                    for item in needed_ingredients
                 }
                 print(local_items_amount)
-                    
+
             print(items_amount)
-            
-            
+
         else:
             print("Not Found")
-        
-    
+
+
 def get_item_ingredients(item: MiddlewareItem) -> list[MiddlewareItem]:
     if not item.recipe:
         return [item]
@@ -71,6 +78,7 @@ def get_item_ingredients(item: MiddlewareItem) -> list[MiddlewareItem]:
     for ingredient in item.recipe.ingredients:
         items += get_item_ingredients(ingredient.item) * ingredient.amount
     return items
+
 
 def process_words(data):
     lines: dict[int, list[str]] = {}
@@ -88,13 +96,14 @@ def process_words(data):
             top = top - 1
         elif top + 1 in lines:
             top = top + 1
-            
+
         if top not in lines:
             lines[top] = []
         lines[top].append(text)
 
     objects = [" ".join(words) for words in lines.values() if len(" ".join(words)) > 6]
     return objects
-    
+
+
 if __name__ == "__main__":
     main()

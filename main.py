@@ -11,7 +11,6 @@ def main() -> None:
         item.name: needed_ingredients.count(item) for item in needed_ingredients
     }
     print(items_amount)
-    ...
 
 
 def get_item_ingredients(item: MiddlewareItem) -> list[MiddlewareItem]:
