@@ -10,6 +10,7 @@ def main() -> None:
     items_amount = {
         item.name: needed_ingredients.count(item) for item in needed_ingredients
     }
+    print(items_amount)
     ...
 
 

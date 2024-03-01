@@ -1,38 +1,100 @@
-import numpy as np
-import pyautogui
 import pytesseract
 from PIL import ImageGrab
+import time
+from middleware import Middleware, MiddlewareItem
 
-img2 = ImageGrab.grab(bbox=(0, 0, 1920, 1080))
-text = pytesseract.image_to_data(img2, output_type=pytesseract.Output.DICT)
+pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"
 
-print(text)
+def main():
+    middleware = Middleware()
 
-for i in range(len(text["text"])):
-    if text["text"][i]:
-        print("Text: ", text["text"][i])
-        print(
-            "Position: ",
-            text["left"][i],
-            text["top"][i],
-            text["width"][i],
-            text["height"][i],
+
+    while True:
+        time.sleep(1)
+        screen_image = ImageGrab.grab(bbox=(0, 0, 1920, 1080))
+        screen_image = screen_image.convert("L")
+        data = pytesseract.image_to_data(
+            screen_image, output_type=pytesseract.Output.DICT
         )
-        print("======")
 
+        possibles_y = []
+        possibles_x = []
+        for word in ["Grand", "Company", "Delivery", "Missions"]:
+            if word in data["text"]:
+                idx = data["text"].index(word)
+                possibles_x.append(data["left"][idx])
+                possibles_y.append(data["top"][idx])
+        
+        if len(possibles_x) >= 3:
+            print("Found !")
+            screen_image = ImageGrab.grab(bbox=(min(possibles_x), min(possibles_y) + 100, min(possibles_x) + 400, min(possibles_y) + 300))
+            #screen_image = screen_image.convert("L")
+            data = pytesseract.image_to_data(
+                screen_image, output_type=pytesseract.Output.DICT
+            )
+            item_names = process_words(data)
+            
+            items_amount = {}
+            
+            for item_name in item_names:
+                print("Looking for items ", item_name)
+                items = middleware.search_item(item_name)
+                
+                if not items:
+                    print("Item not found. Abort")
+                    continue
 
-start_coord = None
+                needed_ingredients = get_item_ingredients(items[0])
+                for needed_ingredient in needed_ingredients:
+                    if needed_ingredient.name not in items_amount:
+                        items_amount[needed_ingredient.name] = 0
+                        
+                    items_amount[needed_ingredient.name] += 1
+                    
+                local_items_amount = {
+                    item.name: needed_ingredients.count(item) for item in needed_ingredients
+                }
+                print(local_items_amount)
+                    
+            print(items_amount)
+            
+            
+        else:
+            print("Not Found")
+        
+    
+def get_item_ingredients(item: MiddlewareItem) -> list[MiddlewareItem]:
+    if not item.recipe:
+        return [item]
 
-# while True:
-#     if keyboard.is_pressed(12):
-#         start_coord = pyautogui.position()
-#     else:
-#         if start_coord:
-#             end_coord = pyautogui.position()
-#             bounds = (end_coord[0] - start_coord[0], end_coord[1] - start_coord[1])
-#             screen_image = ImageGrab.grab(bbox=(0, 0, 1920, 1080))
-#             data = pytesseract.image_to_data(
-#                 screen_image, output_type=pytesseract.Output.DICT
-#             )
-#             ...
-#         is_pressing = False
+    items = []
+    for ingredient in item.recipe.ingredients:
+        items += get_item_ingredients(ingredient.item) * ingredient.amount
+    return items
+
+def process_words(data):
+    lines: dict[int, list[str]] = {}
+    for i in range(len(data["text"])):
+        text = data["text"][i]
+        width = data["width"][i]
+        height = data["height"][i]
+        left = data["left"][i]
+        top = data["top"][i]
+
+        if not text or text[0] == text[0].lower():
+            continue
+
+        if top - 1 in lines:
+            top = top - 1
+        elif top + 1 in lines:
+            top = top + 1
+            
+        if top not in lines:
+            lines[top] = []
+        lines[top].append(text)
+
+    objects = [" ".join(words) for words in lines.values() if len(" ".join(words)) > 6]
+    return objects
+    
+if __name__ == "__main__":
+    main()

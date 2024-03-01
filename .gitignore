@@ -1,1 +1,3 @@
 *.pyc
+%USERPROFILE%
+install-pyenv-win.ps1
