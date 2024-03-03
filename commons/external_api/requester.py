@@ -1,6 +1,6 @@
 import requests
 
-from external_api.type_def import ApiItem, ApiRecipe, ApiSearchResult
+from commons.external_api.type_def import ApiItem, ApiRecipe, ApiSearchResult
 
 
 class Requester:
