@@ -1,6 +1,6 @@
 import requests
 
-from commons.external_api.type_def import ApiItem, ApiRecipe, ApiSearchResult
+from commons.external_api.type_def import ApiItem, ApiMap, ApiRecipe, ApiSearchResult
 
 
 class Requester:
@@ -8,6 +8,7 @@ class Requester:
         self._base_url = "https://xivapi.com"
 
     def get(self, endpoint: str, id: int | str | None = None, **kwargs) -> dict:
+        endpoint = endpoint[1:] if endpoint.startswith("/") else endpoint
         if id:
             endpoint = f"{endpoint}/{id}"
         response = requests.get(f"{self._base_url}/{endpoint}", params=kwargs)
@@ -33,3 +34,6 @@ class Requester:
 
     def get_recipe(self, recipe_id: int) -> ApiRecipe:
         return ApiRecipe.model_validate(self.get("Recipe", recipe_id))
+
+    def get_map(self, map_id: int) -> ApiMap:
+        return ApiMap.model_validate(self.get("Map", map_id))

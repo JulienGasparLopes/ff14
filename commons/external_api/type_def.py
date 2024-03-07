@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+
 from pydantic import BaseModel, Field, model_validator, validator
 
 
@@ -32,6 +33,22 @@ class ApiRecipe(BaseModel):
     item_id: int = Field(alias="ItemResultTargetID")
     ingredients: list[ApiRecipeIngredient] = Field()
 
+    job_name: str = Field(alias="ClassJob")
+    job_abbreviation: str = Field(alias="ClassJob")
+    job_required_level: int = Field(alias="RecideLevelTable")
+
+    @validator("job_name", pre=True)
+    def get_job_name(cls, data: dict[str, str]) -> str:
+        return data.get("Name", "")
+
+    @validator("job_abbreviation", pre=True)
+    def get_job_abbreviation(cls, data: dict[str, str]) -> str:
+        return data.get("Abbreviation", "")
+
+    @validator("job_required_level", pre=True)
+    def get_job_required_level(cls, data: dict[str, str]) -> str:
+        return data.get("ClassJobLevel", "")
+
     @model_validator(mode="before")
     def aggregate_ingredients(cls, data: dict) -> dict:
         ingredients = []
@@ -43,3 +60,16 @@ class ApiRecipe(BaseModel):
                 }
                 ingredients.append(ApiRecipeIngredient.model_validate(ingredient_data))
         return {"ingredients": ingredients, **data}
+
+
+@dataclass(frozen=True)
+class ApiMap(BaseModel):
+    id: int = Field(alias="ID")
+    name: str = Field(alias="PlaceName")
+    offset_x: float = Field(alias="OffsetX")
+    offset_y: float = Field(alias="OffsetY")
+    size_factor: float = Field(alias="SizeFactor")
+
+    @validator("name", pre=True)
+    def get_name(cls, data: dict[str, str]) -> str:
+        return data.get("Name", "")

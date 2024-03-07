@@ -22,13 +22,24 @@ class RepositoryRecipe:
     ingredients: list[RepositoryRecipeIngredient]
 
 
+@dataclass(frozen=True)
+class RepositoryMap:
+    id: int
+    name: str
+    offset_x: float
+    offset_y: float
+    size_factor: float
+
+
 class Repository:
     _items: dict[int, RepositoryItem]
     _recipes: dict[int, RepositoryRecipe]
+    _maps: dict[int, RepositoryMap]
 
     def __init__(self):
         self._items = {}
         self._recipes = {}
+        self._maps = {}
 
     def add_item(self, item: RepositoryItem) -> None:
         self._items[item.id] = item
@@ -41,3 +52,9 @@ class Repository:
 
     def get_recipe(self, recipe_id: int) -> RepositoryRecipe | None:
         return self._recipes.get(recipe_id)
+
+    def add_map(self, map: RepositoryMap) -> None:
+        self._maps[map.id] = map
+
+    def get_map(self, map_id: int) -> RepositoryMap | None:
+        return self._maps.get(map_id)

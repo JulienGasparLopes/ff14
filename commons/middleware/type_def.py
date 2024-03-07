@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Optional
 
 from commons.repository.repository import (
     RepositoryItem,
+    RepositoryMap,
     RepositoryRecipe,
     RepositoryRecipeIngredient,
 )
@@ -66,3 +67,12 @@ class MiddlewareRecipe(MiddlewareObjectBase, RepositoryRecipe):
     @property
     def item(self) -> MiddlewareItem:
         return self._middleware.get_item(self.item_id)
+
+
+@dataclass(frozen=True)
+class MiddlewareMap(MiddlewareObjectBase, RepositoryMap):
+    @classmethod
+    def from_repository_map(
+        cls, middleware: "Middleware", repository_map: RepositoryMap
+    ) -> "MiddlewareMap":
+        return cls(_middleware=middleware, **repository_map.__dict__)

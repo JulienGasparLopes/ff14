@@ -1,13 +1,15 @@
+import os
+
 import pytesseract
 from PIL import Image
 
 
 class OcrManager:
     def __init__(self) -> None:
-        # For Windows
-        pytesseract.pytesseract.tesseract_cmd = (
-            "C:/Program Files/Tesseract-OCR/tesseract.exe"
-        )
+        if os.name == "nt":
+            pytesseract.pytesseract.tesseract_cmd = (
+                "C:/Program Files/Tesseract-OCR/tesseract.exe"
+            )
 
     def find_sentence_position(
         self, image: Image.Image, sentence: str, confidence: float = 0.75

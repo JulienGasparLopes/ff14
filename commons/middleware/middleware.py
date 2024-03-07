@@ -1,8 +1,9 @@
-from commons.middleware.type_def import MiddlewareItem, MiddlewareRecipe
 from commons.external_api.requester import Requester
+from commons.middleware.type_def import MiddlewareItem, MiddlewareMap, MiddlewareRecipe
 from commons.repository.repository import (
     Repository,
     RepositoryItem,
+    RepositoryMap,
     RepositoryRecipe,
     RepositoryRecipeIngredient,
 )
@@ -53,3 +54,17 @@ class Middleware:
             )
             self._repository.add_recipe(recipe)
         return MiddlewareRecipe.from_repository_recipe(self, recipe)
+
+    def get_map(self, map_id: int) -> MiddlewareMap:
+        map = self._repository.get_map(map_id)
+        if map is None:
+            api_map = self._requester.get_map(map_id)
+            map = RepositoryMap(
+                id=api_map.id,
+                name=api_map.name,
+                offset_x=api_map.offset_x,
+                offset_y=api_map.offset_y,
+                size_factor=api_map.size_factor,
+            )
+            self._repository.add_map(map)
+        return MiddlewareMap.from_repository_map(self, map)

@@ -1,3 +1,15 @@
 {
-    "python.analysis.typeCheckingMode": "basic"
+    "python.analysis.typeCheckingMode": "basic",
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "isort.check": true,
+    "editor.formatOnSave": true,
+    "isort.importStrategy": "fromEnvironment",
+    "java.saveActions.organizeImports": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "always"
+    },
+    "isort.args": [
+        "--profile",
+        "black"
+    ]
 }
