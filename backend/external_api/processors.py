@@ -1,7 +1,7 @@
 import json
 from typing import Any, Callable
 
-from commons.external_api.requester import Requester
+from backend.external_api.requester import Requester
 
 
 def process_all_resources(

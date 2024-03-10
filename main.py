@@ -5,11 +5,12 @@ from os.path import isfile
 
 from PIL import Image
 
-from commons.domain.item.helpers import get_item_ingredients
-from commons.external_api.requester import Requester
-from commons.middleware.middleware import Middleware
-from commons.middleware.type_def import MiddlewareMap
-from commons.text_recognition.ocr_manager import OcrManager
+from backend.domain.item.helpers import get_item_ingredients
+from backend.external_api.requester import Requester
+from backend.middleware.middleware import Middleware
+from backend.middleware.type_def import MiddlewareMap
+from backend.repository.repository import RepositoryUser
+from backend.text_recognition.ocr_manager import OcrManager
 
 middleware: Middleware
 
@@ -148,6 +149,9 @@ def main() -> None:
     requester = Requester()
     middleware = Middleware()
 
+    user = RepositoryUser(lodestone_id=51585086)
+    user.job_levels["blacksmith"] = 12
+
     # ----- Simple item search -----
     item_ingredients = search_item_ingredients("chondrite magitek war scythe")
     print(item_ingredients)
@@ -161,18 +165,18 @@ def main() -> None:
     #     print(item_amounts)
 
     # ------ Test Grand Company Menu -----
-    # ocr_manager = OcrManager()
-    # screen_image = Image.open("grand_company_screenshot.png")
-    # item_amounts, item_names = process_grand_company_items(ocr_manager, screen_image)
-    # vendor_items_info = {}
-    # for item_id, amount in item_amounts.items():
-    #     item_name = item_names[item_id]
-    #     vendor_mapping = get_item_vendor_info(item_id)
-    #     for vendor_name, (map_name, x, y) in vendor_mapping.items():
-    #         if vendor_name not in vendor_items_info:
-    #             vendor_items_info[vendor_name] = []
-    #         vendor_items_info[vendor_name].append(item_name)
-    # print(vendor_items_info)
+    ocr_manager = OcrManager()
+    screen_image = Image.open("grand_company_screenshot.png")
+    item_amounts, item_names = process_grand_company_items(ocr_manager, screen_image)
+    vendor_items_info = {}
+    for item_id, amount in item_amounts.items():
+        item_name = item_names[item_id]
+        vendor_mapping = get_item_vendor_info(item_id)
+        for vendor_name, (map_name, x, y) in vendor_mapping.items():
+            if vendor_name not in vendor_items_info:
+                vendor_items_info[vendor_name] = []
+            vendor_items_info[vendor_name].append(item_name)
+    print(vendor_items_info)
 
     # ----- Sandbox -----
 

@@ -31,6 +31,16 @@ class RepositoryMap:
     size_factor: float
 
 
+@dataclass()
+class RepositoryUser:
+    lodestone_id: int
+    job_levels: dict[str, int]
+
+    def __init__(self, lodestone_id: int) -> None:
+        self.lodestone_id = lodestone_id
+        self.job_levels = {}
+
+
 class Repository:
     _items: dict[int, RepositoryItem]
     _recipes: dict[int, RepositoryRecipe]

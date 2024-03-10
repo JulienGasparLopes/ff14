@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Optional
 
-from commons.repository.repository import (
+from backend.repository.repository import (
     RepositoryItem,
     RepositoryMap,
     RepositoryRecipe,

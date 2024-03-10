@@ -1,4 +1,4 @@
-from commons.middleware.type_def import MiddlewareItem
+from backend.middleware.type_def import MiddlewareItem
 
 
 def get_item_ingredients(item: MiddlewareItem) -> list[MiddlewareItem]:

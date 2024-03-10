@@ -1,6 +1,6 @@
-from commons.external_api.requester import Requester
-from commons.middleware.type_def import MiddlewareItem, MiddlewareMap, MiddlewareRecipe
-from commons.repository.repository import (
+from backend.external_api.requester import Requester
+from backend.middleware.type_def import MiddlewareItem, MiddlewareMap, MiddlewareRecipe
+from backend.repository.repository import (
     Repository,
     RepositoryItem,
     RepositoryMap,
